@@ -5,7 +5,7 @@
 // Definição de métodos do display
 
 // Método privado responssável por testar a conexão de um endereço (verificando se ele existe)
-bool display16x2::i2cAddrTest(byte addr){
+bool Display16x2::i2cAddrTest(byte addr){
   // Começa transmissão de barramento com o endereço passado por parâmetro
   Wire.beginTransmission(addr);
   
@@ -18,7 +18,7 @@ bool display16x2::i2cAddrTest(byte addr){
 }
 
 // Construtor da classe display16x2
-display16x2::display16x2(uint8_t sdaPin, uint8_t sclPin){
+Display16x2::Display16x2(uint8_t sdaPin, uint8_t sclPin){
   // Atribuição de pinos do display
   this->sdaPin = sdaPin;
   this->sclPin = sclPin;
@@ -28,7 +28,7 @@ display16x2::display16x2(uint8_t sdaPin, uint8_t sclPin){
 }
 
 // Método público de configuração do display
-bool  display16x2::setup(){
+bool  Display16x2::setup(){
 
   // Verifica instanciações de display
   if(display == NULL) return false;
@@ -53,7 +53,7 @@ bool  display16x2::setup(){
 }
 
 // Método público de atualização da mensagem do display
-void display16x2::updateMessage(String value){
+void Display16x2::updateMessage(String value){
   // Limpa tela do Display
   display->clear();
 

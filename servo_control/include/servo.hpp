@@ -8,8 +8,8 @@
 /*===============================================================================*/
 // Defines
 #define SERVO_PWM_FREQ 50           // hertz
-#define SERVO_PWM_PERIOD 20000      // microssegunds
-#define SERVO_PWM_BITS 13           // 0 - 8191
+#define SERVO_PWM_PERIOD 20000      // microssegundos
+#define SERVO_PWM_BITS 13           // resolução pwm de 0 a 8191
 
 /*===============================================================================*/
 // Operação matemática angle -> duty cicle
