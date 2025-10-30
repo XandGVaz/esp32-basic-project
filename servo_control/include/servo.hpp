@@ -19,12 +19,9 @@
 /*===============================================================================*/
 // Classe do servo
 class Servo{
-
   uint8_t servoPin;
   uint8_t pwmChannel;
- 
  public:
-
   Servo(uint8_t servoPin, uint8_t pwmChannel);
   bool setup();
   bool setAngle(uint8_t angle);

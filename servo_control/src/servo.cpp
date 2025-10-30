@@ -3,6 +3,7 @@
 /*===============================================================================*/
 // Definição de métodos do display
 
+// Construtor da classe Servo
 Servo::Servo(uint8_t servoPin, uint8_t pwmChannel){
     // Atribuição do pino de sinal pwm do servo
     this->servoPin = servoPin;
@@ -11,6 +12,7 @@ Servo::Servo(uint8_t servoPin, uint8_t pwmChannel){
     this->pwmChannel = pwmChannel;
 }
 
+// Método de configuração do servo
 bool Servo::setup(){
     // Configuração do canal PWM para controle do servo
     bool result =  ledcAttachChannel(servoPin, SERVO_PWM_FREQ, SERVO_PWM_BITS, pwmChannel);
@@ -19,6 +21,7 @@ bool Servo::setup(){
     return result;
 }
 
+// Método de definição do ângulo do servo
 bool Servo::setAngle(uint8_t angle){
     // Cálculo do duty cycle correspondente ao ângulo desejado
     uint16_t dutyCicle = angleToDutyCicle(angle, SERVO_PWM_BITS, SERVO_PWM_PERIOD);

@@ -4,8 +4,8 @@
 /*===============================================================================*/
 // Definição de métodos do display
 
-// Função responssável por testar a conexão de um endereço (verificando se ele existe)
-bool I2CAddrTest(byte addr){
+// Método privado responssável por testar a conexão de um endereço (verificando se ele existe)
+bool display16x2::i2cAddrTest(byte addr){
   // Começa transmissão de barramento com o endereço passado por parâmetro
   Wire.beginTransmission(addr);
   
@@ -17,6 +17,7 @@ bool I2CAddrTest(byte addr){
   return false;
 }
 
+// Construtor da classe display16x2
 display16x2::display16x2(uint8_t sdaPin, uint8_t sclPin){
   // Atribuição de pinos do display
   this->sdaPin = sdaPin;
@@ -26,13 +27,17 @@ display16x2::display16x2(uint8_t sdaPin, uint8_t sclPin){
   this->display = new LiquidCrystal_I2C(CI_ADDR1, 16/*colunas*/, 2/*linhas*/);
 }
 
-// Configuração do display 
-void  display16x2::setup(){
+// Método público de configuração do display
+bool  display16x2::setup(){
+
+  // Verifica instanciações de display
+  if(display == NULL) return false;
+
   // Barramento de dados + controle
   Wire.begin(sdaPin, sclPin); // necessário para o funcionamento da biblioteca LiquidCrystal_I2C 
 
   // Caso o endereço do CI não exista no Display, então trocamos de endereço
-  if(!I2CAddrTest(CI_ADDR1)){
+  if(!i2cAddrTest(CI_ADDR1)){
     delete display;
     display = new LiquidCrystal_I2C(CI_ADDR2, 16, 2);
   }
@@ -42,9 +47,12 @@ void  display16x2::setup(){
 
   // Abre luz de fundo do Display
   display->backlight();
+
+  // Retorna sucesso
+  return true;
 }
 
-// Função que atualiza o valor presente no display, confome o texto passado por parâmetro
+// Método público de atualização da mensagem do display
 void display16x2::updateMessage(String value){
   // Limpa tela do Display
   display->clear();

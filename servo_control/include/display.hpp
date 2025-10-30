@@ -22,9 +22,10 @@ class display16x2{
   LiquidCrystal_I2C* display = NULL;
   uint8_t sdaPin;
   uint8_t sclPin;
+  bool i2cAddrTest(byte addr);
  public:
   display16x2(uint8_t sdaPin, uint8_t sclPin);
-  void setup();
+  bool setup();
   void updateMessage(String value);
 };
 
