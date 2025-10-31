@@ -88,3 +88,18 @@ Também é possível usar os botões do menu do PlatformIO no VS Code: "Build", 
 - Se o DHT não responder, verifique o pino e o tipo do sensor (DHT11 vs DHT22) e a biblioteca.
 - Se o display não inicializar, verifique o endereço I2C e os pinos SDA/SCL.
 - Mensagens de erro na serial aparecem no `setup()` caso algum módulo não tenha sido configurado corretamente — revise as mensagens imprimidas.
+
+
+## ⏱️ Uso do FreeRTOS para elaboração de um sistema de tempo real
+
+Este projeto organiza a aplicação em várias tasks do FreeRTOS para obter comportamento determinístico e responsivo. Abaixo está um resumo de como o FreeRTOS é utilizado neste firmware e por que isso ajuda a construir um sistema de tempo real simples e robusto.
+
+| Task | Core | Prioridade | Descrição |
+|---|:---:|:---:|---|
+| vTaskAdjustServo | 1 | 2 | Ajusta servo quando interrupção externa de botões |
+| vTaskUpdateDisplay | 1 | 1 | Atualiza display com o ângulo atual do servo |
+| vTaskGetTemperature | 0 | 1 | Obtém temperatura através do DHT |
+| vTaskGetHumidity | 0 | 1 | Obtém humidade através do DHT |
+| vTaskUpdateSerialMonitor | 0 | 2 | Atualiza monitor serial com humidade e temperatura obtidas |
+
+
