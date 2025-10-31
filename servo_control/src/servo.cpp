@@ -24,7 +24,7 @@ bool Servo::setup(){
 // Método de definição do ângulo do servo
 bool Servo::setAngle(uint8_t angle){
     // Cálculo do duty cycle correspondente ao ângulo desejado
-    uint16_t dutyCicle = angleToDutyCicle(angle, SERVO_PWM_BITS, SERVO_PWM_PERIOD);
+    uint32_t dutyCicle = angleToDutyCicle(angle, SERVO_PWM_BITS, SERVO_PWM_PERIOD);
 
     // Escrita do duty cycle no canal PWM do servo
     bool result = ledcWrite(servoPin, dutyCicle);

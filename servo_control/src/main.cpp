@@ -55,9 +55,10 @@ xTaskHandle xTaskUpdateSerialMonitorHandle = NULL;
 // Variáveis do FreeRTOS 
 
 // Filas
-xQueueHandle xQueueAngleVariation = NULL;  
-xQueueHandle xQueueTemperature = NULL;
-xQueueHandle xQueueHumidity = NULL;
+xQueueHandle xQueueAngleVariation = NULL; 
+xQueueHandle xQueueAngleToDisplay = NULL; 
+xQueueHandle xQueueTemperatureToSerial = NULL;
+xQueueHandle xQueueHumidityToSerial = NULL;
 
 // Timers digitais e prototypes de callbacks
 xTimerHandle xTimerGetTemperature = NULL;
@@ -95,13 +96,14 @@ void setup() {
     pinMode(SUB_SERVO_ANGLE_BUTTON, INPUT_PULLUP);
     
     // Criação de interrupções externas associadas aos botões de controle do motor
-    attachInterrupt(ADD_SERVO_ANGLE_BUTTON, ISRAddAngle, FALLING);
-    attachInterrupt(SUB_SERVO_ANGLE_BUTTON, ISRSubAngle, FALLING);
+    attachInterrupt(ADD_SERVO_ANGLE_BUTTON, vISRAddAngle, FALLING);
+    attachInterrupt(SUB_SERVO_ANGLE_BUTTON, vISRSubAngle, FALLING);
 
     // Criação de filas de dados
-    xQueueAngleVariation = xQueueCreate(10, sizeof(uint8_t));
-    xQueueTemperature = xQueueCreate(10, sizeof(float));
-    xQueueHumidity = xQueueCreate(10, sizeof(float));
+    xQueueAngleVariation = xQueueCreate(4, sizeof(int16_t));
+    xQueueAngleToDisplay = xQueueCreate(10, sizeof(int16_t));
+    xQueueTemperatureToSerial = xQueueCreate(10, sizeof(float));
+    xQueueHumidityToSerial = xQueueCreate(10, sizeof(float));
 
     // Setup de módulos
     if(!ServoMotor.setup()){
@@ -172,48 +174,122 @@ void loop() {
 // Definição das tasks
 
 void vTaskAdjustServo(void *pvParameters){
-    while(1){
+    // Variáveis locais
+    int16_t servoAngle = 90;
+    int16_t angleVariation = 0;
+    
+    // Definição do ângulo inicial do servo
+    ServoMotor.setAngle(servoAngle);
 
+    while(1){
+        // Espera por variação de ângulo através da fila
+        xQueueReceive(xQueueAngleVariation, &angleVariation, portMAX_DELAY);
+        
+        // Ajuste do ângulo do servo
+        servoAngle += angleVariation;
+
+        // Limitação do ângulo do servo entre 0 e 180 graus
+        if(servoAngle < 0){
+            servoAngle = 0;
+            xQueueReset(xQueueAngleVariation);
+        }
+        if(servoAngle > 180){
+            servoAngle = 180;
+            xQueueReset(xQueueAngleVariation);
+        }
+        
+        // Definição do novo ângulo do servo
+        ServoMotor.setAngle(servoAngle);
+        
+        // Envio do novo ângulo para atualização do display
+        xQueueSend(xQueueAngleToDisplay, &servoAngle, portMAX_DELAY);
     }
 }
 
 void vTaskUpdateDisplay(void *pvParameters){
-    while(1){
+    // Variável local
+    int16_t servoAngle = 0;
 
+    while(1){
+        // Espera por novo ângulo do servo através da fila
+        xQueueReceive(xQueueAngleToDisplay, &servoAngle, portMAX_DELAY);
+
+        // Atualização da mensagem do display com o ângulo atual do servo
+        Display.updateMessage("Angulo: " + String(servoAngle));
     }
 }
 
 void vTaskGetTemperature(void *pvParameters){
-    while(1){
+    // Inicia o timer de obtenção de temperatura
+    xTimerStart(xTimerGetTemperature, 0);
 
+    // Variável local
+    float temperature = 0;
+
+    while(1){
+        // Espera notificação do timer para obter a temperatura
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        // Obtém a temperatura do DHT
+        temperature = DHT.getTemperature();
+
+        // Envia a temperatura para o monitor serial através da fila
+        xQueueSend(xQueueTemperatureToSerial, &temperature, portMAX_DELAY);
     }
 }
 
 void vTaskGetHumidity(void *pvParameters){
-    while(1){
+    // Inicia o timer de obtenção de humidade
+    xTimerStart(xTimerGetHumidity, 0);
 
+    // Variável local
+    float humidity = 0;
+
+    while(1){
+        // Espera notificação do timer para obter a humidade
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        // Obtém a humidade do DHT
+        humidity = DHT.getHumidity();
+
+        // Envia a humidade para o monitor serial através da fila
+        xQueueSend(xQueueHumidityToSerial, &humidity, portMAX_DELAY);
     }
 }
 
 void vTaskUpdateSerialMonitor(void *pvParameters){
-    while(1){
+    // Variáveis locais
+    float humidity = 0, temperature = 0;
 
+    while(1){
+        // Espera por novos dados de humidade e temperatura através das filas
+        xQueueReceive(xQueueTemperatureToSerial, &temperature, portMAX_DELAY);
+        xQueueReceive(xQueueHumidityToSerial, &humidity, portMAX_DELAY);
+        
+        // Atualiza o monitor serial com os novos dados
+        Serial.println("Temperatura: " + String(temperature) + "ºC || Humidade: " + String(humidity) + "%");
     }
 }
 
-void callBackTimerGetTemperature(xTimerHandle xTimer){
-
+void vCallBackTimerGetTemperature(xTimerHandle xTimer){
+    // Notifica a task de obtenção de temperatura
+    vTaskNotifyGiveFromISR(xTaskGetTemperatureHandle, NULL);
 }
 
-void callBackTimerGetHumidity(xTimerHandle xTimer){
-
+void vCallBackTimerGetHumidity(xTimerHandle xTimer){
+    // Notifica a task de obtenção de humidade
+    vTaskNotifyGiveFromISR(xTaskGetHumidityHandle, NULL);
 }
 
 
-void ISRAddAngle(){
-
+void vISRAddAngle(){
+    // Envio de variação positiva de ângulo para a fila ao pressionar o botão direito
+    static int16_t angle = 5;
+    xQueueSendToBackFromISR(xQueueAngleVariation, &angle, NULL);
 }
 
-void ISRSubAngle(){
-
+void vISRSubAngle(){
+    // Envio de variação negativa de ângulo para a fila ao pressionar o botão esquerdo
+    static int16_t angle = -5;
+    xQueueSendToBackFromISR(xQueueAngleVariation, &angle, NULL);
 }
