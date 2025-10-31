@@ -29,12 +29,12 @@
 
 /*
 Task                       Core  Prio     Descrição
-------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 vTaskAdjustServo            1     2     Ajusta servo quando interrupção externa de botões
 vTaskUpdateDisplay          1     1     Atualiza display com o ângulo atual do servo
 vTaskGetTemperature         0     1     Obtém temperatura através do DHT
 vTaskGetHumidity            0     1     Obtém humidade através do DHT
-vTaslUpdateSerialMonitor    0     2     Atualiza monitor serial com humidade e temperatura
+vTaslUpdateSerialMonitor    0     2     Atualiza monitor serial com humidade e temperatura obtidas
 */
 
 // Prototypes
