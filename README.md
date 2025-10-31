@@ -29,6 +29,8 @@ Projeto de exemplo para ESP32 que integra controle de um servo, leitura de senso
 
 Conecte os botões ao GND e aos pinos indicados (com pull-up interno habilitado no firmware). Ajuste pinos no código caso precise usar outros pinos.
 
+![Diagrama do circuito](docs/circuit_image.png)
+
 ## 🛠️ Software / Ferramentas
 
 - PlatformIO (recomendado) integrado ao VS Code
