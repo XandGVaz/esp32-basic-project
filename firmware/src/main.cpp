@@ -102,17 +102,15 @@ void setup() {
     xQueueTemperatureToDisplay = xQueueCreate(10, sizeof(float));
     xQueueHumidityToDisplay = xQueueCreate(10, sizeof(float));
 
-    // Setup de módulos
+    // Configuração de módulos
     if(!ServoMotor.setup()){
         Serial.println("Erro na configuracao do servo");
         while(1);
     }
-    Display.setup();
     if(!Display.setup()){
         Serial.println("Erro na configuracao do display");
         while(1);
     }
-    DHT.setup();
     if(!DHT.setup()){
         Serial.println("Erro na configuracao do DHT");
         while(1);
