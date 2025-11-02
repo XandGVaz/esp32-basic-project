@@ -31,9 +31,9 @@
 Task                       Core  Prio     Descrição
 --------------------------------------------------------------------------------------------------
 vTaskAdjustServo            1     2     Ajusta servo quando interrupção externa de botões
-vTaskUpdateDisplay          1     1     Atualiza display com o ângulo atual, temperatura e humidade
+vTaskUpdateDisplay          1     1     Atualiza display com o ângulo atual, temperatura e umidade
 vTaskGetTemperature         0     1     Obtém temperatura através do DHT
-vTaskGetHumidity            0     1     Obtém humidade através do DHT
+vTaskGetHumidity            0     1     Obtém umidade através do DHT
 */
 
 // Prototypes
@@ -240,20 +240,20 @@ void vTaskGetTemperature(void *pvParameters){
 }
 
 void vTaskGetHumidity(void *pvParameters){
-    // Inicia o timer de obtenção de humidade
+    // Inicia o timer de obtenção de umidade
     xTimerStart(xTimerGetHumidity, 0);
 
     // Variável local
     float humidity = 0;
 
     while(1){
-        // Espera notificação do timer para obter a humidade
+        // Espera notificação do timer para obter a umidade
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        // Obtém a humidade do DHT
+        // Obtém a umidade do DHT
         humidity = DHT.getHumidity();
 
-        // Envia a humidade para o monitor serial através da fila
+        // Envia a umidade para o monitor serial através da fila
         xQueueSend(xQueueHumidityToDisplay, &humidity, portMAX_DELAY);
     }
 }
