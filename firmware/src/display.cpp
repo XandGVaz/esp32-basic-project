@@ -71,3 +71,16 @@ void Display16x2::updateMessage(String value){
   display->setCursor(0,1);
   display->print(value.substring(11,27));
 }
+
+void Display16x2::writeMessage(String value, uint8_t line){
+  // Seta a posição de impressão no Display na linha selecionada
+  display->setCursor(0,line);
+
+  // Impressão de dados na linha selecionada
+  display->print(value);
+}
+
+void Display16x2::clear(){
+  // Limpa caracteres presentes no display
+  display->clear();
+}

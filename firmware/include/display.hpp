@@ -27,6 +27,8 @@ class Display16x2{
   Display16x2(uint8_t sdaPin, uint8_t sclPin);
   bool setup();
   void updateMessage(String value);
+  void writeMessage(String value, uint8_t line);
+  void clear();
 };
 
 #endif
