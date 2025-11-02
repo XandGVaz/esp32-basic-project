@@ -6,8 +6,8 @@ Projeto de exemplo para ESP32 que integra controle de um servo, leitura de senso
 
 - Controle de um servo por botões físicos (incremento/decremento do ângulo).
 - Leitura periódica de temperatura e umidade via sensor DHT.
-- Exibição do ângulo do servo em display 16x2 (I2C).
-- Envio de temperatura e umidade para monitor serial.
+- Exibição do ângulo do servo no display 16x2 (I2C).
+- Exibição da temperatura e da umidade no display 16x2 (I2C).
 
 ## 📦 Hardware necessário
 
@@ -79,8 +79,7 @@ Também é possível usar os botões do menu do PlatformIO no VS Code: "Build", 
 1. Conecte a placa ESP32 ao computador via USB.
 2. Verifique as ligações do sensor, display, servo e botões conforme a seção de pinos.
 3. Compile e grave o firmware com PlatformIO.
-4. Abra o monitor serial (115200) para ver leituras de temperatura e umidade.
-5. Use os botões físicos para ajustar o ângulo do servo; o display mostrará o ângulo atual.
+4. Use os botões físicos para ajustar o ângulo do servo; o display mostrará o ângulo atual, a temperatura e a humidade na região próxima ao servo.
 
 ## 💡 Dicas e solução de problemas
 
